@@ -1,0 +1,5 @@
+# Auth
+config.ini
+
+# Dump files for debugging
+dailyDump*

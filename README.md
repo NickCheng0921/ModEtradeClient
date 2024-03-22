@@ -7,3 +7,7 @@ Modified EtradeClient meant to be more automated trade friendly
 Keep alive sessions that bypass the 2 hour access token refresh period
 
 Ability to place live trades through API call
+
+## Usage
+
+Call CHARIOT.py to generate a keep alive access session that accesses first brokerage account by default
