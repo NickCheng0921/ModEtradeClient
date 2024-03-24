@@ -3,3 +3,11 @@ config.ini
 
 # Dump files for debugging
 dailyDump*
+dailyOrders.txt
+
+# logs
+tritonLog*
+python_client.log
+
+# testing
+test_request*

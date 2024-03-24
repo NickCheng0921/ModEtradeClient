@@ -4,10 +4,10 @@ Modified EtradeClient meant to be more automated trade friendly
 
 ## Current features
 
-Keep alive sessions that bypass the 2 hour access token refresh period
+Background flask app that can perform different orders through API calls
 
-Ability to place live trades through API call
+Session refresh handled by background scheduler, ensuring uptime past 2 hour access token expiration
 
 ## Usage
 
-Call CHARIOT.py to generate a keep alive access session that accesses first brokerage account by default
+Call flask run in home directory

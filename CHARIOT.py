@@ -1,19 +1,17 @@
-"""This Python script provides examples on using the E*TRADE API endpoints"""
+"""Flask app for event handler"""
 from __future__ import print_function
 import webbrowser
 import configparser
 from rauth import OAuth1Service
 from requests_oauthlib import OAuth1
 from accounts.accounts import Accounts
-from datetime import datetime
 import requests
-import time
 
 # loading configuration file
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-OAUTH_REFRESH_MIN = 90 #  from etrade docs, access tokens expire every 2 hours and at midnight by default
+OAUTH_REFRESH_MIN = 60 #  from etrade docs, access tokens expire every 2 hours and at midnight by default
 OAUTH_RETRY_MIN = 15 #  if we fail to refresh, wait this many minutes and retry
 
 def oauth():
@@ -45,7 +43,7 @@ def oauth():
 									request_token_secret,
 									params={"oauth_verifier": text_code})
 
-	main_loop(session, base_url)
+	return session, base_url
 
 def renew_session(session):
 	renew_url = "https://api.etrade.com/oauth/renew_access_token"
@@ -57,24 +55,7 @@ def renew_session(session):
 
 	return response
 
-def main_loop(session, base_url):
-	while True:
-		today = datetime.now()
-		print('\n', today.strftime('%Y-%m-%d | %H:%M:%S'))
-
-		accounts = Accounts(session, base_url)
-		accounts.cash_balance_from_account_AUTO()
-
-		time.sleep(OAUTH_REFRESH_MIN*60)
-
-		response = renew_session(session)
-
-		if response.status_code != 200:
-			time.sleep(OAUTH_RETRY_MIN*60)
-			response = renew_session(session)
-			if response.status_code != 200:
-				print("Refresh failed twice")
-				break
-
-if __name__ == "__main__":
-	oauth()
+def get_cash_balance(session, base_url):
+	accounts = Accounts(session, base_url)
+	cash, _ = accounts.cash_balance_from_account_AUTO()
+	return cash

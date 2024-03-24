@@ -44,8 +44,6 @@ class Accounts:
                     and "Account" in data["AccountListResponse"]["Accounts"]:
                 accounts = data["AccountListResponse"]["Accounts"]["Account"]
 
-                print("\nBrokerage Account List:")
-
                 accounts[:] = [d for d in accounts if d.get('accountStatus') != 'CLOSED']
                 account_index = 1
                 self.account = accounts[int(account_index) - 1]
@@ -54,6 +52,7 @@ class Accounts:
                 print("Error: AccountList API service error")
         else:
             print("Error: AccountList API service error")
+        return None
 
     def account_list(self):
         """
@@ -281,7 +280,7 @@ class Accounts:
                 if balance_data is not None and "Computed" in balance_data \
                         and "cashBuyingPower" in balance_data["Computed"]:
                     liquidity = float(balance_data["Computed"]["cashBuyingPower"])
-                    print("Cash Buying Power: " + str('${:,.2f}'.format(liquidity)))
+                    #print("Cash Buying Power: " + str('${:,.2f}'.format(liquidity)))
                     return liquidity
             else:
                 print("Error: Balance API service error")
