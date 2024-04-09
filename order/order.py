@@ -27,7 +27,7 @@ class Order:
         self.account = account
         self.base_url = base_url
 
-    def place_market_order_AUTO(self, ticker, shares):
+    def place_market_order_AUTO(self, ticker, shares, action):
         """
         Call preview order API based on selecting from different given options
 
@@ -35,7 +35,7 @@ class Order:
         """
 
         # User's order selection
-        order, client_order_id = self.build_market_order_AUTO(ticker, shares)
+        order, client_order_id = self.build_market_order_AUTO(ticker, shares, action)
 
         # URL for the API endpoint
         url = self.base_url + "/v1/accounts/" + self.account["accountIdKey"] + "/orders/preview.json"
@@ -125,7 +125,9 @@ class Order:
             else:
                 print(f"Error: Preview Order API service error on prod with code {response.status_code}")
 
-    def place_sell_limit_order_AUTO(self, ticker, shares, stop_loss, isBelow):
+        return response
+
+    def place_limit_order_AUTO(self, ticker, shares, stop, direction):
         """
         Call preview order API based on selecting from different given options
 
@@ -133,7 +135,7 @@ class Order:
         """
 
         # User's order selection
-        order, client_order_id = self.build_sell_limit_order_AUTO(ticker, shares, stop_loss)
+        order, client_order_id = self.build_limit_order_AUTO(ticker, shares, stop, direction)
 
         # URL for the API endpoint
         url = self.base_url + "/v1/accounts/" + self.account["accountIdKey"] + "/orders/preview.json"
@@ -217,15 +219,8 @@ class Order:
         # Make API call for POST request
         response = self.session.post(url_prod, header_auth=True, headers=headers, data=payload)
 
-        if response is not None and response.status_code == 200:
-            print(f"    Placed Sell Limit Order: {client_order_id}")
-        else:
-            data = response.json()
-            if 'Error' in data and 'message' in data["Error"] and data["Error"]["message"] is not None:
-                print("Error: " + str(data))
-            else:
-                print(f"Error: Preview Order API service error on prod with code {response.status_code}")
-
+        return response
+    
     def place_EXTREME_SHIT_order_AUTO(self, ticker, shares):
         """
         Call preview order API based on selecting from different given options
@@ -327,20 +322,26 @@ class Order:
             else:
                 print(f"Error: Preview Order API service error on prod with code {response.status_code}")
 
-    def build_sell_limit_order_AUTO(self, ticker, shares, stop_loss):
+    def build_limit_order_AUTO(self, ticker, shares, stop, isSell = True):
         """
             Provides users options to select to preview orders
             :param self test
             :return user's order selections
             """
+        direction = None
+        if isSell:
+            direction = "SELL"
+        else:
+            direction = "BUY"
+
         order = {"price_type": "LIMIT",
                  "order_term": "GOOD_UNTIL_CANCEL",
                  "symbol": ticker,
-                 "order_action": "SELL",
+                 "order_action": direction,
                  "limit_price":"",
                  "quantity": ""}
 
-        order["limit_price"] = stop_loss
+        order["limit_price"] = stop
         order["client_order_id"] = random.randint(1000000000, 9999999999)
         order["quantity"] = shares
 
@@ -718,7 +719,7 @@ class Order:
             else:
                 print("Unknown Option Selected!")
 
-    def build_market_order_AUTO(self, ticker, shares):
+    def build_market_order_AUTO(self, ticker, shares, action="BUY"):
         """
             Provides users options to select to preview orders
             :param self test
@@ -727,7 +728,7 @@ class Order:
         order = {"price_type": "MARKET",
                  "order_term": "GOOD_FOR_DAY",
                  "symbol": ticker,
-                 "order_action": "BUY",
+                 "order_action": action,
                  "limit_price":None,
                  "quantity": shares}
         """

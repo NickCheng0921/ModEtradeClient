@@ -1,4 +1,4 @@
-"""This Python script provides examples on using the E*TRADE API endpoints
+"""
 Trade handler is named after the major arcana CHARIOT which represents control and action
 """
 from __future__ import print_function
@@ -24,8 +24,8 @@ from webdriver_manager.firefox import GeckoDriverManager
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-OAUTH_REFRESH_MIN = 90 #  from etrade docs, access tokens expire every 2 hours and at midnight by default
-OAUTH_RETRY_MIN = 15 #  if we fail to refresh, wait this many minutes and retry
+OAUTH_REFRESH_MIN = 60 #  from etrade docs, access tokens expire every 2 hours and at midnight by default
+OAUTH_RETRY_MIN = 5 #  if we fail to refresh, wait this many minutes and retry
 LOGIN_STAGE_WAIT_TIME_SEC = 25
 
 def spoofLogin(website_url):
