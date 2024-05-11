@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, request
-from order.order import Order
-from accounts.accounts import Accounts
 
 # hack needed in order to use local modules
 # run with python -m flask run --host=0.0.0.0
 import sys, os
 sys.path.append(os.getcwd())
+
+from order.order import Order
+from accounts.accounts import Accounts
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -15,6 +16,7 @@ import time
 
 app = Flask(__name__)
 oauth_lock = False
+session, base_url, brk_acc = None, None, None
 
 def renew_session_token():
 	if oauth_lock:
@@ -44,9 +46,7 @@ def renew_access_token():
 	today = datetime.now()
 	print("\nTOK Access token generated at ", today.strftime('%Y-%m-%d | %H:%M:%S'), '\n')
 
-	return session, base_url, brk_acc
-
-session, base_url, brk_acc = renew_access_token()
+renew_access_token()
 accounts = Accounts(session, base_url)
 
 scheduler = BackgroundScheduler()
